@@ -3,7 +3,7 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
 import { cn } from '../../lib/utils';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   error?: string;
   size?: 'sm' | 'md' | 'lg';
 }

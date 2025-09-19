@@ -21,8 +21,8 @@ const mockGroup = {
   groupId: 'group-1',
   groupName: 'Gaming Stream Duo',
   collaborators: [
-    { displayName: 'Alice', walletAddress: '0x1234...5678', percentage: 60 },
-    { displayName: 'Bob', walletAddress: '0x8765...4321', percentage: 40 },
+    { displayName: 'Alice', collaboratorWalletAddress: '0x1234...5678', percentage: 60 },
+    { displayName: 'Bob', collaboratorWalletAddress: '0x8765...4321', percentage: 40 },
   ],
 };
 
@@ -125,7 +125,7 @@ export function TipInterface({ groupId, onViewChange }: TipInterfaceProps) {
                   <div>
                     <p className="font-medium text-white">{collaborator.displayName}</p>
                     <p className="text-xs text-gray-400">
-                      {collaborator.walletAddress.slice(0, 6)}...{collaborator.walletAddress.slice(-4)}
+                      {collaborator.collaboratorWalletAddress.slice(0, 6)}...{collaborator.collaboratorWalletAddress.slice(-4)}
                     </p>
                   </div>
                   <div className="text-right">
@@ -161,7 +161,7 @@ export function TipInterface({ groupId, onViewChange }: TipInterfaceProps) {
               <div className="space-y-2">
                 {splits.map((split, index) => {
                   const collaborator = group.collaborators.find(
-                    c => c.walletAddress === split.collaboratorAddress
+                    c => c.collaboratorWalletAddress === split.collaboratorAddress
                   );
                   return (
                     <div key={index} className="flex items-center justify-between">

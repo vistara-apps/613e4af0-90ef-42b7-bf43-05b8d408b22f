@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useMiniKit } from '@coinbase/minikit';
 import { Users, Zap, BarChart3, ArrowRight } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
@@ -13,7 +12,9 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onViewChange }: WelcomeScreenProps) {
   const [isConnecting, setIsConnecting] = useState(false);
-  const { user, context } = useMiniKit();
+  // TODO: Implement proper authentication with available hooks
+  const user = null;
+  const context = null;
 
   const handleGetStarted = async () => {
     setIsConnecting(true);
@@ -66,14 +67,7 @@ export function WelcomeScreen({ onViewChange }: WelcomeScreenProps) {
             </p>
           </div>
 
-          {user ? (
-            <div className="bg-dark-bg rounded-lg p-3">
-              <p className="text-sm text-gray-400">Connected as</p>
-              <p className="text-white font-medium">
-                {context?.user?.displayName || 'Anonymous User'}
-              </p>
-            </div>
-          ) : null}
+          {/* TODO: Implement authentication UI */}
         </div>
       </Card>
 

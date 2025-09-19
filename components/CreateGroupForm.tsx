@@ -43,7 +43,18 @@ export function CreateGroupForm({ onViewChange }: CreateGroupFormProps) {
     if (collaborators.length > MIN_COLLABORATORS) {
       const newCollaborators = collaborators.filter((_, i) => i !== index);
       const equalPercentage = Math.floor(100 / newCollaborators.length);
-      
+
+      setCollaborators(
+        newCollaborators.map(c => ({ ...c, percentage: equalPercentage }))
+      );
+    }
+  };
+
+  const removeLastCollaborator = () => {
+    if (collaborators.length > MIN_COLLABORATORS) {
+      const newCollaborators = collaborators.slice(0, -1);
+      const equalPercentage = Math.floor(100 / newCollaborators.length);
+
       setCollaborators(
         newCollaborators.map(c => ({ ...c, percentage: equalPercentage }))
       );
@@ -169,7 +180,7 @@ export function CreateGroupForm({ onViewChange }: CreateGroupFormProps) {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={removeCollaborator}
+                onClick={removeLastCollaborator}
                 disabled={collaborators.length <= MIN_COLLABORATORS}
                 className="flex items-center space-x-1"
               >
