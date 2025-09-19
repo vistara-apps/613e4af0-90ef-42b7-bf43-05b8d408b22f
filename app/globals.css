@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: hsl(210, 36%, 96%);
+  --accent: hsl(350, 80%, 60%);
+  --border: hsl(210, 15%, 77%);
+  --primary: hsl(204, 94%, 48%);
+  --surface: hsl(0, 0%, 100%);
+  --text-primary: hsl(210, 15%, 17%);
+  --text-secondary: hsl(210, 15%, 37%);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 20px;
+  --spacing-xl: 32px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: linear-gradient(135deg, hsl(250, 100%, 70%) 0%, hsl(180, 100%, 70%) 100%);
+  min-height: 100vh;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    color: hsl(0, 0%, 95%);
+    font-weight: 600;
+  }
+  
+  p {
+    color: hsl(0, 0%, 70%);
+    line-height: 1.75;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-cyan-500 hover:bg-cyan-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-dark-surface hover:bg-opacity-80 text-white font-semibold py-3 px-6 rounded-lg border border-dark-border transition-colors duration-200;
+  }
+  
+  .input-field {
+    @apply bg-dark-surface border border-dark-border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200;
+  }
+  
+  .card {
+    @apply bg-dark-surface rounded-xl p-6 shadow-card border border-dark-border;
+  }
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, hsl(250, 100%, 70%) 0%, hsl(180, 100%, 70%) 100%);
+}
+
+.dark-card {
+  background: hsl(220, 13%, 22%);
+  border: 1px solid hsl(220, 13%, 35%);
+}
