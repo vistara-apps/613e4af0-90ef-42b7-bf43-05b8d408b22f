@@ -32,12 +32,12 @@ export function isValidAddress(address: string): boolean {
 
 export function calculateSplitAmounts(
   totalAmount: string,
-  splits: { collaboratorWalletAddress: string; percentage: number }[]
+  splits: { walletAddress?: string; collaboratorWalletAddress?: string; percentage: number }[]
 ): { collaboratorAddress: string; amount: string }[] {
   const total = parseFloat(totalAmount);
   
   return splits.map(split => ({
-    collaboratorAddress: split.collaboratorWalletAddress,
+    collaboratorAddress: split.walletAddress || split.collaboratorWalletAddress || '',
     amount: ((total * split.percentage) / 100).toString(),
   }));
 }

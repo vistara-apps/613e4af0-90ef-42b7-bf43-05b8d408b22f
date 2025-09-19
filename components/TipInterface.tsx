@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { ArrowLeft, Send, Users, DollarSign } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowLeft, Send, Users, DollarSign, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Card } from './ui/Card';
 import { TipInput } from './TipInput';
 import { Notification } from './ui/Notification';
+import { WalletConnect } from './WalletConnect';
 import { formatAmount, calculateSplitAmounts } from '../lib/utils';
 import { SUPPORTED_CURRENCIES } from '../lib/constants';
+import { usePayments } from '../lib/hooks/usePayments';
 import type { AppView } from '../app/page';
 
 interface TipInterfaceProps {
@@ -28,14 +30,56 @@ const mockGroup = {
 
 export function TipInterface({ groupId, onViewChange }: TipInterfaceProps) {
   const [tipAmount, setTipAmount] = useState('');
-  const [selectedCurrency, setSelectedCurrency] = useState(SUPPORTED_CURRENCIES[0]);
-  const [isSending, setIsSending] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<typeof SUPPORTED_CURRENCIES[number]>(SUPPORTED_CURRENCIES[0]);
+  const [balance, setBalance] = useState('0');
   const [notification, setNotification] = useState<{
     type: 'success' | 'error' | 'info';
     message: string;
   } | null>(null);
 
+  const {
+    isProcessing,
+    error,
+    lastPayment,
+    confirmations,
+    processTipPayment,
+    checkBalance,
+    clearError,
+    resetPayment,
+    isConnected,
+  } = usePayments();
+
   const group = mockGroup; // In real app, fetch by groupId
+
+  // Check balance when currency changes or wallet connects
+  useEffect(() => {
+    if (isConnected) {
+      checkBalance(selectedCurrency).then(setBalance);
+    } else {
+      setBalance('0');
+    }
+  }, [selectedCurrency, isConnected, checkBalance]);
+
+  // Handle payment errors
+  useEffect(() => {
+    if (error) {
+      setNotification({
+        type: 'error',
+        message: error,
+      });
+    }
+  }, [error]);
+
+  // Handle successful payments
+  useEffect(() => {
+    if (lastPayment?.success) {
+      setNotification({
+        type: 'success',
+        message: `Successfully sent ${formatAmount(tipAmount)} ${selectedCurrency.symbol} tip!`,
+      });
+      setTipAmount('');
+    }
+  }, [lastPayment, tipAmount, selectedCurrency.symbol]);
 
   const handleSendTip = async () => {
     if (!tipAmount || parseFloat(tipAmount) <= 0) {
@@ -46,29 +90,24 @@ export function TipInterface({ groupId, onViewChange }: TipInterfaceProps) {
       return;
     }
 
-    setIsSending(true);
-    try {
-      // Calculate splits
-      const splits = calculateSplitAmounts(tipAmount, group.collaborators);
-      
-      // Simulate transaction
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      setNotification({
-        type: 'success',
-        message: `Successfully sent ${formatAmount(tipAmount)} ${selectedCurrency.symbol} tip!`,
-      });
-      
-      setTipAmount('');
-    } catch (error) {
-      console.error('Failed to send tip:', error);
+    if (!isConnected) {
       setNotification({
         type: 'error',
-        message: 'Failed to send tip. Please try again.',
+        message: 'Please connect your wallet first',
       });
-    } finally {
-      setIsSending(false);
+      return;
     }
+
+    if (parseFloat(balance) < parseFloat(tipAmount)) {
+      setNotification({
+        type: 'error',
+        message: `Insufficient ${selectedCurrency.symbol} balance`,
+      });
+      return;
+    }
+
+    clearError();
+    await processTipPayment(tipAmount, selectedCurrency, group.collaborators);
   };
 
   const splits = tipAmount ? calculateSplitAmounts(tipAmount, group.collaborators) : [];
@@ -101,6 +140,37 @@ export function TipInterface({ groupId, onViewChange }: TipInterfaceProps) {
           message={notification.message}
           onClose={() => setNotification(null)}
         />
+      )}
+
+      {/* Wallet Connection */}
+      {!isConnected && (
+        <Card>
+          <WalletConnect />
+        </Card>
+      )}
+
+      {/* Balance Display */}
+      {isConnected && (
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm text-gray-400">Available Balance</h3>
+              <p className="text-lg font-semibold text-white">
+                {formatAmount(balance)} {selectedCurrency.symbol}
+              </p>
+            </div>
+            <div className="text-right">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => checkBalance(selectedCurrency).then(setBalance)}
+                disabled={isProcessing}
+              >
+                Refresh
+              </Button>
+            </div>
+          </div>
+        </Card>
       )}
 
       {/* Group Info */}
@@ -180,13 +250,60 @@ export function TipInterface({ groupId, onViewChange }: TipInterfaceProps) {
         </div>
       </Card>
 
+      {/* Transaction Status */}
+      {lastPayment?.success && lastPayment.transactionHashes.length > 0 && (
+        <Card>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <span>Payment Sent</span>
+            </h3>
+            
+            <div className="space-y-3">
+              {lastPayment.transactionHashes.map((hash, index) => {
+                const confirmation = confirmations.get(hash);
+                const collaborator = group.collaborators[index];
+                
+                return (
+                  <div key={hash} className="bg-dark-bg rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-400">
+                        To {collaborator?.displayName}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        {confirmation?.status === 'confirmed' && (
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                        )}
+                        {confirmation?.status === 'pending' && (
+                          <Clock className="w-4 h-4 text-yellow-400" />
+                        )}
+                        {confirmation?.status === 'failed' && (
+                          <AlertCircle className="w-4 h-4 text-red-400" />
+                        )}
+                        <span className="text-xs text-gray-400">
+                          {confirmation?.confirmations || 0} confirmations
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <p className="text-xs text-gray-500 font-mono">
+                      {hash.slice(0, 10)}...{hash.slice(-8)}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Send Button */}
       <Button
         onClick={handleSendTip}
-        disabled={isSending || !tipAmount || parseFloat(tipAmount) <= 0}
+        disabled={isProcessing || !tipAmount || parseFloat(tipAmount) <= 0 || !isConnected}
         className="w-full btn-primary flex items-center justify-center space-x-2"
       >
-        {isSending ? (
+        {isProcessing ? (
           <>
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             <span>Sending Tip...</span>

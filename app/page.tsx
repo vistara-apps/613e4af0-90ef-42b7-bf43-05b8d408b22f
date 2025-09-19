@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useMiniKit } from '@coinbase/minikit';
+import { useAccount } from 'wagmi';
 import { AppShell } from '../components/AppShell';
 import { CreateGroupForm } from '../components/CreateGroupForm';
 import { TipInterface } from '../components/TipInterface';
@@ -13,7 +13,7 @@ export type AppView = 'welcome' | 'create-group' | 'tip' | 'analytics';
 export default function HomePage() {
   const [currentView, setCurrentView] = useState<AppView>('welcome');
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
-  const { user } = useMiniKit();
+  const { address, isConnected } = useAccount();
 
   const handleViewChange = (view: AppView, groupId?: string) => {
     setCurrentView(view);

@@ -3,13 +3,9 @@
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from './ui/Input';
+import { SUPPORTED_CURRENCIES } from '../lib/constants';
 
-interface Currency {
-  symbol: string;
-  name: string;
-  decimals: number;
-  address: string;
-}
+type Currency = typeof SUPPORTED_CURRENCIES[number];
 
 interface TipInputProps {
   amount: string;
