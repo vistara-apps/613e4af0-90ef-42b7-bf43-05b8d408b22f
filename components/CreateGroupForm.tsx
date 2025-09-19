@@ -169,7 +169,7 @@ export function CreateGroupForm({ onViewChange }: CreateGroupFormProps) {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={removeCollaborator}
+                onClick={() => removeCollaborator(collaborators.length - 1)}
                 disabled={collaborators.length <= MIN_COLLABORATORS}
                 className="flex items-center space-x-1"
               >

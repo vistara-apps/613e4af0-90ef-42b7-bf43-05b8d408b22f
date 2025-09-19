@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useMiniKit } from '@coinbase/minikit';
+import { useAccount } from 'wagmi';
 import { Users, Zap, BarChart3, ArrowRight } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
+import { WalletConnect } from './WalletConnect';
 import type { AppView } from '../app/page';
 
 interface WelcomeScreenProps {
@@ -13,7 +14,7 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onViewChange }: WelcomeScreenProps) {
   const [isConnecting, setIsConnecting] = useState(false);
-  const { user, context } = useMiniKit();
+  const { address, isConnected } = useAccount();
 
   const handleGetStarted = async () => {
     setIsConnecting(true);
@@ -66,14 +67,20 @@ export function WelcomeScreen({ onViewChange }: WelcomeScreenProps) {
             </p>
           </div>
 
-          {user ? (
+          {!isConnected && (
+            <div className="mt-4">
+              <WalletConnect />
+            </div>
+          )}
+
+          {isConnected && address && (
             <div className="bg-dark-bg rounded-lg p-3">
-              <p className="text-sm text-gray-400">Connected as</p>
+              <p className="text-sm text-gray-400">Wallet Connected</p>
               <p className="text-white font-medium">
-                {context?.user?.displayName || 'Anonymous User'}
+                {address.slice(0, 6)}...{address.slice(-4)}
               </p>
             </div>
-          ) : null}
+          )}
         </div>
       </Card>
 
