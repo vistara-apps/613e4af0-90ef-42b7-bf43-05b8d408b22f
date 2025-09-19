@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useMiniKit } from '@coinbase/minikit';
+import { useMiniKit } from '../app/providers';
 import { Users, Zap, BarChart3, ArrowRight } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
