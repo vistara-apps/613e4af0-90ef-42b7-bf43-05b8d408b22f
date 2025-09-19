@@ -1,0 +1,14 @@
+{
+  "name": "TipSplitter",
+  "description": "TipSplitter is a Base Mini App built with Zara.",
+  "image": "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=OG",
+  "external_url": "https://613e4af0-90ef-42b7-bf43-05b8d408b22f.vercel.app",
+  "properties": {
+    "app": {
+      "name": "TipSplitter",
+      "description": "TipSplitter is a Base Mini App built with Zara.",
+      "url": "https://613e4af0-90ef-42b7-bf43-05b8d408b22f.vercel.app",
+      "icon": "https://0co.to/images/zara-2.png"
+    }
+  }
+}
