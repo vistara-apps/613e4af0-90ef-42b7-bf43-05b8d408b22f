@@ -11,7 +11,7 @@ export const SUPPORTED_CURRENCIES = [
     decimals: 6,
     address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
   },
-] as const;
+];
 
 export const MAX_COLLABORATORS = 3;
 export const MIN_COLLABORATORS = 2;
