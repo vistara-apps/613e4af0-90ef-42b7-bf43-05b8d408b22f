@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useMiniKit } from '@coinbase/minikit';
+import { useMiniKit } from './providers';
 import { AppShell } from '../components/AppShell';
 import { CreateGroupForm } from '../components/CreateGroupForm';
 import { TipInterface } from '../components/TipInterface';

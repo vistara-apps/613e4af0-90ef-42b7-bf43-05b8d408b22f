@@ -50,6 +50,10 @@ export function CreateGroupForm({ onViewChange }: CreateGroupFormProps) {
     }
   };
 
+  const removeLastCollaborator = () => {
+    removeCollaborator(collaborators.length - 1);
+  };
+
   const updateCollaborator = (index: number, field: keyof Omit<CollaboratorSplit, 'splitId' | 'groupId'>, value: string | number) => {
     const updated = [...collaborators];
     updated[index] = { ...updated[index], [field]: value };
@@ -169,7 +173,7 @@ export function CreateGroupForm({ onViewChange }: CreateGroupFormProps) {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={removeCollaborator}
+                onClick={removeLastCollaborator}
                 disabled={collaborators.length <= MIN_COLLABORATORS}
                 className="flex items-center space-x-1"
               >
